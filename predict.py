@@ -119,7 +119,7 @@ if (network == 'vgg16'):
     #print(model)
     if (numberHL == 1):
         classifier = nn.Sequential(OrderedDict([
-                          ('fc1', nn.Linear(25088, 1000)),
+                          ('fc1', nn.Linear(25088, 102)),
                           ('relu', nn.ReLU()),
                           ('drop', nn.Dropout(0.2)),
                           ('output', nn.LogSoftmax(dim=1))
@@ -129,7 +129,7 @@ if (network == 'vgg16'):
                           ('fc1', nn.Linear(25088, 4096)),
                           ('relu', nn.ReLU()),
                           ('drop', nn.Dropout(0.2)),
-                          ('fc2', nn.Linear(4096, 1000)),
+                          ('fc2', nn.Linear(4096, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
         
@@ -140,7 +140,7 @@ if (network == 'vgg16'):
                           ('fc2', nn.Linear(80192, 4096)),
                           ('relu', nn.ReLU()),
                           ('drop', nn.Dropout(0.2)),
-                          ('fc3', nn.Linear(4096, 1000)),
+                          ('fc3', nn.Linear(4096, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
                                
@@ -155,7 +155,7 @@ elif (network == 'resnet50'):
     #print(model)
     if (numberHL == 1):
         classifier = nn.Sequential(OrderedDict([
-                          ('fc1', nn.Linear(2048, 1000)),
+                          ('fc1', nn.Linear(2048, 102)),
                           ('relu', nn.ReLU()),
                           ('drop', nn.Dropout(0.2)),
                           ('output', nn.LogSoftmax(dim=1))
@@ -165,7 +165,7 @@ elif (network == 'resnet50'):
                           ('fc1', nn.Linear(2048, 1536)),
                           ('relu', nn.ReLU()),
                           ('drop', nn.Dropout(0.2)),
-                          ('fc2', nn.Linear(1536, 1000)),
+                          ('fc2', nn.Linear(1536, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
     
@@ -177,7 +177,7 @@ elif (network == 'resnet50'):
                           ('fc2', nn.Linear(1792, 1536)),
                           ('relu', nn.ReLU()),
                           ('drop', nn.Dropout(0.2)),
-                          ('fc3', nn.Linear(1536, 1000)),
+                          ('fc3', nn.Linear(1536, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))   
     model.fc = classifier

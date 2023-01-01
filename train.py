@@ -41,7 +41,7 @@ def get_input_args():
                     help = 'CNN-model either "resnet50", or "vgg16" (default)') 
     # Argument 3: number of hidden layers
     parser.add_argument('--numHL', type = int, default = 2, 
-                    help = 'number of hidden layers, 1 or 2 allowed') 
+                    help = 'number of hidden units, 1 or 2 allowed') 
     # Argument 4: GPU support
     parser.add_argument('--gpu', type = bool, default = True, 
                     help = 'gpu support wished, input True or empty string') 
@@ -78,7 +78,10 @@ test_dir = data_dir + '/test'
 
 #network = 'vgg16' #either VGG-16 or ResNet-50
 network = in_arg.arch
-numberHL = in_arg.numHL    # number of hidden layers 1, 2, or 3
+numberHL = in_arg.numHL    # number of hidden units 1, 2
+
+if (numberHL > 2): # doesn't work -> memory problem
+    numberHL = 2
 learning_rate = in_arg.learn
 epochs = in_arg.epochs
 gpu_use = in_arg.gpu
@@ -145,7 +148,7 @@ if (network == 'vgg16'):
     #print(model)
     if (numberHL == 1):
         classifier = nn.Sequential(OrderedDict([
-                          ('fc1', nn.Linear(25088, 1000)),
+                          ('fc1', nn.Linear(25088, 102)),
                           ('relu', nn.ReLU()),
                           ('drop', nn.Dropout(0.2)),
                           ('output', nn.LogSoftmax(dim=1))
@@ -155,7 +158,7 @@ if (network == 'vgg16'):
                           ('fc1', nn.Linear(25088, 4096)),
                           ('relu', nn.ReLU()),
                           ('drop', nn.Dropout(0.2)),
-                          ('fc2', nn.Linear(4096, 1000)),
+                          ('fc2', nn.Linear(4096, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
         
@@ -166,7 +169,7 @@ if (network == 'vgg16'):
                           ('fc2', nn.Linear(80192, 4096)),
                           ('relu', nn.ReLU()),
                           ('drop', nn.Dropout(0.2)),
-                          ('fc3', nn.Linear(4096, 1000)),
+                          ('fc3', nn.Linear(4096, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
                                
@@ -181,7 +184,7 @@ elif (network == 'resnet50'):
     #print(model)
     if (numberHL == 1):
         classifier = nn.Sequential(OrderedDict([
-                          ('fc1', nn.Linear(2048, 1000)),
+                          ('fc1', nn.Linear(2048, 102)),
                           ('relu', nn.ReLU()),
                           ('drop', nn.Dropout(0.2)),
                           ('output', nn.LogSoftmax(dim=1))
@@ -191,7 +194,7 @@ elif (network == 'resnet50'):
                           ('fc1', nn.Linear(2048, 1536)),
                           ('relu', nn.ReLU()),
                           ('drop', nn.Dropout(0.2)),
-                          ('fc2', nn.Linear(1536, 1000)),
+                          ('fc2', nn.Linear(1536, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
     
@@ -203,7 +206,7 @@ elif (network == 'resnet50'):
                           ('fc2', nn.Linear(1792, 1536)),
                           ('relu', nn.ReLU()),
                           ('drop', nn.Dropout(0.2)),
-                          ('fc3', nn.Linear(1536, 1000)),
+                          ('fc3', nn.Linear(1536, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))   
     model.fc = classifier
@@ -226,7 +229,7 @@ elif (network == 'resnet50'):
     
 #print(model)    
 # start training sequence
-print("Start training, Network = {}, hidden layers = {}, learning rate = {}, GPU on = {}".
+print("Start training, Network = {}, hidden units = {}, learning rate = {}, GPU on = {}".
              format(network, str(numberHL), learning_rate, device))
 accuracy_mean = 0.
 step = 0
