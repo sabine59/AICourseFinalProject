@@ -34,7 +34,7 @@ def get_input_args():
 
     # Create 6 command line arguments as mentioned above using add_argument() from ArguementParser method
     # Argument 1: that's a path to a folder
-    parser.add_argument('--path', type = str, default = 'flower_data/valid/17/image_03829.jpg', 
+    parser.add_argument('--imagepath', type = str, default = 'flower_data/valid/17/image_03829.jpg', 
                     help = 'path to the file with a flower images') 
     # Argument 2: the CNN-model
     parser.add_argument('--arch', type = str, default = 'vgg16', 
@@ -42,8 +42,15 @@ def get_input_args():
  
     # Argument 3: GPU support
     parser.add_argument('--gpu', type = bool, default = True, 
-                    help = 'gpu support wished, input True or False') 
+                    help = 'gpu support wished, input True or empty string') 
 
+    # Argument 4: the filename of the json-file with the mapping directory to flowername
+    parser.add_argument('--jsonpath', type = str, default = 'cat_to_name.json', 
+                    help = 'path to the file with the mapping flower name to directory') 
+
+    # Argument 5: number of top-probabilities to print
+    parser.add_argument('--topk', type = int, default = 6, 
+                    help = 'number of top-probabilities to print') 
 
     return parser.parse_args()
 
@@ -77,7 +84,9 @@ localrun = True
 
 network = in_arg.arch
 gpu_use = in_arg.gpu
-image_file = in_arg.path
+image_file = in_arg.imagepath
+json_name_file = in_arg.jsonpath
+numberTopKs = in_arg.topk
 
 
 
@@ -86,8 +95,8 @@ image_file = in_arg.path
 # 
 # You'll also need to load in a mapping from category label to category name. You can find this in the file `cat_to_name.json`. It's a JSON object which you can read in with the [`json` module](https://docs.python.org/2/library/json.html). This will give you a dictionary mapping the integer encoded categories to the actual names of the flowers.
 
-with open('cat_to_name.json', 'r') as f:
-    cat_to_name = json.load(f)
+with open(json_name_file, 'r') as f:
+    cat_to_name = json.load(f, strict=False)
     
 #print(cat_to_name)
 
@@ -218,7 +227,7 @@ model.to(device)
 
 
 
-def predict(image_path, model, topk=5):
+def predict(image_path, model, num_topk):
     ''' Predict the class (or classes) of an image using a trained deep learning model.
     '''
     
@@ -239,7 +248,7 @@ def predict(image_path, model, topk=5):
 
         loss = model.forward(inputs.to(device))
         ps = torch.exp(loss.cpu())
-        ps = ps.topk(5)
+        ps = ps.topk(num_topk)
         print(ps)
         print()
         # the probabilities are related to output classes
@@ -250,7 +259,7 @@ def predict(image_path, model, topk=5):
 
      
         i = 0
-        while i < 5:
+        while i < num_topk:
             v = indx[0][i]
             i+=1
             classes.append(v)
@@ -271,5 +280,5 @@ def predict(image_path, model, topk=5):
                     
 # pick up the picture and compute the probability        
 for infile in glob.glob(image_file):
-    predict(infile, model, topk=5)
+    predict(infile, model, numberTopKs)
     break   

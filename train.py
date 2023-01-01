@@ -34,7 +34,7 @@ def get_input_args():
 
     # Create 6 command line arguments as mentioned above using add_argument() from ArguementParser method
     # Argument 1: that's a path to a folder
-    parser.add_argument('--dir', type = str, default = 'flowers', 
+    parser.add_argument('--dir', type = str, default = 'flower_data', 
                     help = 'path to the folder of flower images') 
     # Argument 2: the CNN-model
     parser.add_argument('--arch', type = str, default = 'vgg16', 
@@ -44,7 +44,7 @@ def get_input_args():
                     help = 'number of hidden layers, 1 or 2 allowed') 
     # Argument 4: GPU support
     parser.add_argument('--gpu', type = bool, default = True, 
-                    help = 'gpu support wished, input True or False') 
+                    help = 'gpu support wished, input True or empty string') 
     # Argument 5: number of hidden layers
     parser.add_argument('--learn', type = float, default = 0.001, 
                     help = 'learning rate') 
@@ -279,39 +279,6 @@ for e in range(epochs):
               "Training Loss: {:.3f}.. ".format(train_losses[-1]),
               "Test Loss: {:.3f}.. ".format(test_losses[-1]),
               "Mean Test Accuracy: {:.3f}".format(accuracy_mean))
-
-# ## Testing your network
-# 
-# It's good practice to test your trained network on test data, images the network has never seen either in training or validation. This will give you a good estimate for the model's performance on completely new images. Run the test images through the network and measure the accuracy, the same way you did validation. You should be able to reach around 70% accuracy on the test set if the model has been trained well.
-
-
-# TODO: Do validation on the test set
-        # confirm accuracy running the test data
-        # turn off gradients while validating
-step = 0
-test_losses = []
-with torch.no_grad():
-    model.eval() # turn off dropout
-    for images, labels in testloader:
-        step += 1
-        # Move input and label tensors to the GPU
-        images, labels = images.to(device), labels.to(device)
-        # Get the class probabilities
-        log_ps = model.forward(images)
-        test_loss += criterion(log_ps, labels)
-        ps = torch.exp(log_ps)
-           
-        top_p, top_class = ps.topk(1, dim=1)
-        equals = top_class == labels.view(*top_class.shape)
-        accuracy = torch.mean(equals.type(torch.FloatTensor))
-        print(f'Accuracy: {accuracy.item()*100}%')
-        accuracy_mean += accuracy.item() *100
-    accuracy_mean = accuracy_mean / step
-    step = 0
-    test_losses.append(test_loss/len(testloader))
-
-    print("Test Loss: {:.3f}.. ".format(test_losses[-1]),
-        "Mean Test Accuracy: {:.3f}".format(accuracy_mean))
 
 
 # ## Save the checkpoint
