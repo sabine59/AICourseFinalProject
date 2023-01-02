@@ -80,8 +80,7 @@ test_dir = data_dir + '/test'
 network = in_arg.arch
 numberHL = in_arg.numHL    # number of hidden units 1, 2
 
-if (numberHL > 2): # doesn't work -> memory problem
-    numberHL = 2
+
 learning_rate = in_arg.learn
 epochs = in_arg.epochs
 gpu_use = in_arg.gpu
@@ -150,25 +149,26 @@ if (network == 'vgg16'):
         classifier = nn.Sequential(OrderedDict([
                           ('fc1', nn.Linear(25088, 102)),
                           ('relu', nn.ReLU()),
-                          ('drop', nn.Dropout(0.2)),
+                          ('drop', nn.Dropout(0.5)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
     elif (numberHL == 2):
         classifier = nn.Sequential(OrderedDict([
                           ('fc1', nn.Linear(25088, 4096)),
                           ('relu', nn.ReLU()),
-                          ('drop', nn.Dropout(0.2)),
+                          ('drop', nn.Dropout(0.5)),
                           ('fc2', nn.Linear(4096, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
         
     elif (numberHL == 3):
         classifier = nn.Sequential(OrderedDict([
-                          ('fc1', nn.Linear(25088, 80192)),
-                          ('relu', nn.ReLU()),
-                          ('fc2', nn.Linear(80192, 4096)),
-                          ('relu', nn.ReLU()),
-                          ('drop', nn.Dropout(0.2)),
+                          ('fc1', nn.Linear(25088, 12544)),
+                          ('relu1', nn.ReLU()),
+                          ('drop1', nn.Dropout(0.5, inplace=False)),
+                          ('fc2', nn.Linear(12544, 4096)),
+                          ('relu2', nn.ReLU()),
+                          ('drop2', nn.Dropout(0.5, inplace=False)),
                           ('fc3', nn.Linear(4096, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
@@ -186,14 +186,14 @@ elif (network == 'resnet50'):
         classifier = nn.Sequential(OrderedDict([
                           ('fc1', nn.Linear(2048, 102)),
                           ('relu', nn.ReLU()),
-                          ('drop', nn.Dropout(0.2)),
+                          ('drop', nn.Dropout(0.5)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
     elif (numberHL == 2):
         classifier = nn.Sequential(OrderedDict([
                           ('fc1', nn.Linear(2048, 1536)),
                           ('relu', nn.ReLU()),
-                          ('drop', nn.Dropout(0.2)),
+                          ('drop', nn.Dropout(0.5)),
                           ('fc2', nn.Linear(1536, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
@@ -201,12 +201,13 @@ elif (network == 'resnet50'):
 
     elif (numberHL == 3):
         classifier = nn.Sequential(OrderedDict([
-                          ('fc1', nn.Linear(2048, 1792)),
-                          ('relu', nn.ReLU()),
-                          ('fc2', nn.Linear(1792, 1536)),
-                          ('relu', nn.ReLU()),
-                          ('drop', nn.Dropout(0.2)),
-                          ('fc3', nn.Linear(1536, 102)),
+                          ('fc1', nn.Linear(2048, 1536)),
+                          ('relu1', nn.ReLU()),
+                          ('drop1', nn.Dropout(0.5)),
+                          ('fc2', nn.Linear(1536, 1024)),
+                          ('relu2', nn.ReLU()),
+                          ('drop2', nn.Dropout(0.2)),
+                          ('fc3', nn.Linear(1024, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))   
     model.fc = classifier

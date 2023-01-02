@@ -121,25 +121,26 @@ if (network == 'vgg16'):
         classifier = nn.Sequential(OrderedDict([
                           ('fc1', nn.Linear(25088, 102)),
                           ('relu', nn.ReLU()),
-                          ('drop', nn.Dropout(0.2)),
+                          ('drop', nn.Dropout(0.5)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
     elif (numberHL == 2):
         classifier = nn.Sequential(OrderedDict([
                           ('fc1', nn.Linear(25088, 4096)),
                           ('relu', nn.ReLU()),
-                          ('drop', nn.Dropout(0.2)),
+                          ('drop', nn.Dropout(0.5)),
                           ('fc2', nn.Linear(4096, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
         
     elif (numberHL == 3):
         classifier = nn.Sequential(OrderedDict([
-                          ('fc1', nn.Linear(25088, 80192)),
-                          ('relu', nn.ReLU()),
-                          ('fc2', nn.Linear(80192, 4096)),
-                          ('relu', nn.ReLU()),
-                          ('drop', nn.Dropout(0.2)),
+                          ('fc1', nn.Linear(25088, 12544)),
+                          ('relu1', nn.ReLU()),
+                          ('drop1', nn.Dropout(0.5, inplace=False)),
+                          ('fc2', nn.Linear(12544, 4096)),
+                          ('relu2', nn.ReLU()),
+                          ('drop2', nn.Dropout(0.5, inplace=False)),
                           ('fc3', nn.Linear(4096, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
@@ -157,14 +158,14 @@ elif (network == 'resnet50'):
         classifier = nn.Sequential(OrderedDict([
                           ('fc1', nn.Linear(2048, 102)),
                           ('relu', nn.ReLU()),
-                          ('drop', nn.Dropout(0.2)),
+                          ('drop', nn.Dropout(0.5)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
     elif (numberHL == 2):
         classifier = nn.Sequential(OrderedDict([
                           ('fc1', nn.Linear(2048, 1536)),
                           ('relu', nn.ReLU()),
-                          ('drop', nn.Dropout(0.2)),
+                          ('drop', nn.Dropout(0.5)),
                           ('fc2', nn.Linear(1536, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))
@@ -172,12 +173,13 @@ elif (network == 'resnet50'):
 
     elif (numberHL == 3):
         classifier = nn.Sequential(OrderedDict([
-                          ('fc1', nn.Linear(2048, 1792)),
-                          ('relu', nn.ReLU()),
-                          ('fc2', nn.Linear(1792, 1536)),
-                          ('relu', nn.ReLU()),
-                          ('drop', nn.Dropout(0.2)),
-                          ('fc3', nn.Linear(1536, 102)),
+                          ('fc1', nn.Linear(2048, 1536)),
+                          ('relu1', nn.ReLU()),
+                          ('drop1', nn.Dropout(0.2)),
+                          ('fc2', nn.Linear(1536, 1024)),
+                          ('relu2', nn.ReLU()),
+                          ('drop2', nn.Dropout(0.5)),
+                          ('fc3', nn.Linear(1024, 102)),
                           ('output', nn.LogSoftmax(dim=1))
                           ]))   
     model.fc = classifier
@@ -227,7 +229,7 @@ model.to(device)
 
 
 
-def predict(image_path, model, num_topk):
+def predict(infile, model, num_topk):
     ''' Predict the class (or classes) of an image using a trained deep learning model.
     '''
     
@@ -278,7 +280,16 @@ def predict(image_path, model, num_topk):
                     labels.append(cat_to_name[key])
                     print("Class: {}, Label: {}, Probability: {}". format(cl, labels[i-1], probs[0][i-1]))
                     
-# pick up the picture and compute the probability        
-for infile in glob.glob(image_file):
-    predict(infile, model, numberTopKs)
-    break   
+# pick up the picture and compute the probability   
+data_dir = 'flower_data'
+while 1>0:
+    input("Please enter a key to continue ...")
+    flower_class = str(np.random.randint(0,102))
+    path_to_img = data_dir + '/' + 'valid' + '/' + flower_class + '/' + '*.jpg'     
+    for infile in glob.glob(path_to_img):
+        predict(infile, model, numberTopKs)
+        print("name of flower: ", cat_to_name[flower_class ])
+        
+    
+
+
